@@ -437,7 +437,13 @@ document.getElementById('surveyForm').addEventListener('submit', async e => {
   btn.textContent = 'Enviando…';
 
   try {
-    await addDoc(collection(db, 'respuestas'), { ...res, timestamp: serverTimestamp() });
+    let ip = 'desconocida';
+    try {
+      const ipRes = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipRes.json();
+      ip = ipData.ip;
+    } catch(_) {}
+    await addDoc(collection(db, 'respuestas'), { ...res, ip, timestamp: serverTimestamp() });
     showToast('¡Enviado! Gracias por participar 🎉');
     e.target.reset();
     answered.clear();
