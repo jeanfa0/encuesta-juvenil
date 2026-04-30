@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resultados — Redes & Estudio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0f0e0d;
+  color: #f5f0e8;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+.topstrip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  height: 5px;
+}
+.ts1{background:#e8412c}.ts2{background:#f59e0b}.ts3{background:#16a34a}
+.ts4{background:#2563eb}.ts5{background:#7c3aed}.ts6{background:#db2777}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* HEADER */
+.header {
+  padding: 52px 0 40px;
+  border-bottom: 1px solid #2a2725;
+  margin-bottom: 48px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.header-left {}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #6b6560;
+  margin-bottom: 14px;
+}
+
+.dot-live {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.4;transform:scale(0.75)}
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -1px;
+  color: #f5f0e8;
+}
+
+h1 em { font-style: italic; color: #e8412c; }
+
+.header-meta {
+  text-align: right;
+}
+
+.total-badge {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #f5f0e8;
+  line-height: 1;
+}
+
+.total-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #6b6560;
+  margin-top: 4px;
+}
+
+/* REFRESH BTN */
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #1e1c1a;
+  border: 1px solid #2a2725;
+  border-radius: 100px;
+  color: #a8a29e;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+.refresh-btn:hover { background: #2a2725; color: #f5f0e8; border-color: #3a3633; }
+.refresh-btn.loading { opacity: 0.6; pointer-events: none; }
+.refresh-icon { font-size: 14px; transition: transform 0.5s; }
+.refresh-btn.loading .refresh-icon { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* SECTION DIVIDER */
+.sec-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 28px;
+}
+
+.sec-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.sec-social { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+.sec-acad   { background: rgba(22,163,74,0.1);  color: #4ade80; border: 1px solid rgba(22,163,74,0.2); }
+
+.sec-line { flex: 1; height: 1px; background: #2a2725; }
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+/* Q CARD */
+.q-card {
+  background: #1a1816;
+  border: 1px solid #2a2725;
+  border-radius: 18px;
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+.q-card:hover { border-color: #3a3633; }
+
+.q-num {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4a4643;
+  margin-bottom: 6px;
+}
+
+.q-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #d6d0c8;
+  line-height: 1.45;
+  margin-bottom: 20px;
+  min-height: 42px;
+}
+
+.chart-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px;
+}
+
+.chart-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.chart-avg {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: #f5f0e8;
+  line-height: 1;
+}
+
+.chart-avg-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #4a4643;
+  margin-top: 3px;
+}
+
+/* LEGEND */
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-name {
+  font-size: 12px;
+  color: #7a7470;
+  flex: 1;
+}
+
+.legend-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a8a29e;
+  min-width: 20px;
+  text-align: right;
+}
+
+.legend-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f5f0e8;
+  min-width: 38px;
+  text-align: right;
+}
+
+/* LOADING */
+.loading-state {
+  text-align: center;
+  padding: 80px 0;
+  color: #4a4643;
+}
+
+.loading-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid #2a2725;
+  border-top-color: #e8412c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+.loading-text {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #4a4643;
+}
+
+/* ERROR */
+.error-state {
+  text-align: center;
+  padding: 60px 0;
+  color: #e8412c;
+  display: none;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding-top: 28px;
+  border-top: 1px solid #1e1c1a;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #3a3633;
+}
+
+@media (max-width: 600px) {
+  .header { flex-direction: column; align-items: flex-start; }
+  .header-meta { text-align: left; }
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="topstrip">
+  <div class="ts1"></div><div class="ts2"></div><div class="ts3"></div>
+  <div class="ts4"></div><div class="ts5"></div><div class="ts6"></div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="header-left">
+      <div class="eyebrow">
+        <span class="dot-live"></span>
+        Panel de resultados · 2025
+      </div>
+      <h1>Resultados de la<br><em>encuesta</em></h1>
+    </div>
+    <div class="header-meta">
+      <div class="total-badge" id="totalCount">—</div>
+      <div class="total-label">Respuestas totales</div>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+        <span class="refresh-icon">↻</span>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  <div id="mainContent">
+    <div class="loading-state" id="loadingState">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Cargando respuestas…</div>
+    </div>
+    <div class="error-state" id="errorState">
+      <p style="font-size:2rem;margin-bottom:12px">⚠️</p>
+      <p>Error al cargar los datos. Verifica tu conexión.</p>
+    </div>
+    <div id="chartsArea" style="display:none"></div>
+  </div>
+
+  <div class="footer">Bravo · Gonzáles · Llantoy &nbsp;·&nbsp; Investigación Académica 2025</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBvyZZkAgIZeLqaLANuAUurtUJUPLzAObg",
+  authDomain: "encuesta-redes-2025.firebaseapp.com",
+  projectId: "encuesta-redes-2025",
+  storageBucket: "encuesta-redes-2025.firebasestorage.app",
+  messagingSenderId: "625527824388",
+  appId: "1:625527824388:web:f186b0fed304ea41c85551"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const QS = [
+  { n:1,  s:'social',   t:'Paso mucho tiempo al día en redes sociales.' },
+  { n:2,  s:'social',   t:'Siento la necesidad de revisar mis redes constantemente.' },
+  { n:3,  s:'social',   t:'Me cuesta dejar de usar redes sociales.' },
+  { n:4,  s:'social',   t:'Uso redes sociales incluso cuando tengo responsabilidades académicas.' },
+  { n:5,  s:'social',   t:'Me siento ansioso/a si no puedo acceder a mis redes.' },
+  { n:6,  s:'social',   t:'Reviso redes sociales apenas me despierto.' },
+  { n:7,  s:'social',   t:'Uso redes sociales antes de dormir.' },
+  { n:8,  s:'academic', t:'Me distraigo con redes sociales mientras estudio.' },
+  { n:9,  s:'academic', t:'Dejo tareas o trabajos por usar redes sociales.' },
+  { n:10, s:'academic', t:'Mi rendimiento académico se ve afectado por el uso de redes sociales.' },
+];
+
+const LABELS  = ['Nunca', 'Rara vez', 'A veces', 'Casi siempre', 'Siempre'];
+const COLORS  = ['#2563eb', '#16a34a', '#d97706', '#7c3aed', '#e8412c'];
+const COLORS_BG = ['rgba(37,99,235,0.15)', 'rgba(22,163,74,0.15)', 'rgba(217,119,6,0.15)', 'rgba(124,58,237,0.15)', 'rgba(232,65,44,0.15)'];
+
+let chartInstances = {};
+
+window.loadData = async function() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('errorState').style.display = 'none';
+  document.getElementById('chartsArea').style.display = 'none';
+
+  try {
+    const snap = await getDocs(collection(db, 'respuestas'));
+    const docs = [];
+    snap.forEach(d => docs.push(d.data()));
+
+    document.getElementById('totalCount').textContent = docs.length;
+
+    if (docs.length === 0) {
+      document.getElementById('loadingState').innerHTML = '<p style="color:#4a4643;font-size:14px">Aún no hay respuestas registradas.</p>';
+      btn.classList.remove('loading');
+      return;
+    }
+
+    renderCharts(docs);
+
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('chartsArea').style.display = 'block';
+
+  } catch(err) {
+    console.error(err);
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('errorState').style.display = 'block';
+  }
+
+  btn.classList.remove('loading');
+};
+
+function renderCharts(docs) {
+  const area = document.getElementById('chartsArea');
+  area.innerHTML = '';
+
+  // Destroy previous chart instances
+  Object.values(chartInstances).forEach(c => c.destroy());
+  chartInstances = {};
+
+  const socialQs   = QS.filter(q => q.s === 'social');
+  const academicQs = QS.filter(q => q.s === 'academic');
+
+  area.appendChild(buildSection('📱 Adicción a redes sociales', 'social', socialQs, docs));
+  area.appendChild(buildSection('📚 Desempeño académico', 'academic', academicQs, docs));
+}
+
+function buildSection(title, type, questions, docs) {
+  const wrap = document.createElement('div');
+
+  const divider = document.createElement('div');
+  divider.className = 'sec-divider';
+  divider.innerHTML = `
+    <span class="sec-label ${type === 'social' ? 'sec-social' : 'sec-acad'}">${title}</span>
+    <div class="sec-line"></div>`;
+  wrap.appendChild(divider);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+
+  questions.forEach(q => {
+    const counts = [0,0,0,0,0];
+    let total = 0;
+    docs.forEach(d => {
+      const v = d['q'+q.n];
+      if (v >= 1 && v <= 5) { counts[v-1]++; total++; }
+    });
+
+    const avg = total > 0
+      ? (counts.reduce((s, c, i) => s + c*(i+1), 0) / total).toFixed(1)
+      : '—';
+
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.innerHTML = `
+      <div class="q-num">Pregunta ${String(q.n).padStart(2,'0')}</div>
+      <div class="q-text">${q.t}</div>
+      <div class="chart-wrap">
+        <canvas id="chart${q.n}" width="160" height="160"></canvas>
+        <div class="chart-center">
+          <div class="chart-avg">${avg}</div>
+          <div class="chart-avg-label">promedio</div>
+        </div>
+      </div>
+      <div class="legend" id="legend${q.n}"></div>
+    `;
+
+    grid.appendChild(card);
+
+    // Build legend
+    setTimeout(() => {
+      const legend = document.getElementById('legend'+q.n);
+      if (!legend) return;
+      legend.innerHTML = '';
+      LABELS.forEach((lbl, i) => {
+        const pct = total > 0 ? Math.round((counts[i]/total)*100) : 0;
+        const row = document.createElement('div');
+        row.className = 'legend-row';
+        row.innerHTML = `
+          <div class="legend-dot" style="background:${COLORS[i]}"></div>
+          <span class="legend-name">${lbl}</span>
+          <span class="legend-count">${counts[i]}</span>
+          <span class="legend-pct">${pct}%</span>
+        `;
+        legend.appendChild(row);
+      });
+
+      // Draw chart
+      const ctx = document.getElementById('chart'+q.n);
+      if (!ctx) return;
+
+      const data = counts.some(c => c > 0) ? counts : [1,1,1,1,1];
+      const isEmpty = !counts.some(c => c > 0);
+
+      chartInstances['q'+q.n] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: LABELS,
+          datasets: [{
+            data: isEmpty ? [1,1,1,1,1] : counts,
+            backgroundColor: isEmpty
+              ? ['#2a2725','#2a2725','#2a2725','#2a2725','#2a2725']
+              : COLORS,
+            borderColor: '#1a1816',
+            borderWidth: 3,
+            hoverOffset: 6,
+          }]
+        },
+        options: {
+          cutout: '68%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              enabled: !isEmpty,
+              callbacks: {
+                label: ctx => {
+                  const count = counts[ctx.dataIndex];
+                  const pct = total > 0 ? Math.round((count/total)*100) : 0;
+                  return ` ${count} respuestas (${pct}%)`;
+                }
+              },
+              backgroundColor: '#1a1816',
+              borderColor: '#2a2725',
+              borderWidth: 1,
+              titleColor: '#f5f0e8',
+              bodyColor: '#a8a29e',
+              padding: 10,
+              cornerRadius: 8,
+            }
+          },
+          animation: {
+            animateRotate: true,
+            duration: 700,
+            easing: 'easeOutQuart'
+          }
+        }
+      });
+    }, 50);
+  });
+
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+// Auto-load on start
+loadData();
+</script>
+</body>
+</html>
