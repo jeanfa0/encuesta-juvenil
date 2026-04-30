@@ -75,32 +75,7 @@ h1 em { font-style: italic; color: #e8412c; }
   line-height: 1.65;
 }
 
-.name-wrap { margin-bottom: 40px; }
 
-.field-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #a8a29e;
-  margin-bottom: 8px;
-}
-
-.name-input {
-  width: 100%;
-  background: #fff;
-  border: 1.5px solid #e7e3dc;
-  border-radius: 10px;
-  padding: 13px 16px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
-  color: #1c1917;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.name-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
-.name-input::placeholder { color: #c4bfb9; }
 
 .sec-header {
   display: flex;
@@ -462,8 +437,7 @@ document.getElementById('surveyForm').addEventListener('submit', async e => {
   btn.textContent = 'Enviando…';
 
   try {
-    const name = document.getElementById('nameInput').value.trim() || 'Anónimo';
-    await addDoc(collection(db, 'respuestas'), { name, ...res, timestamp: serverTimestamp() });
+    await addDoc(collection(db, 'respuestas'), { ...res, timestamp: serverTimestamp() });
     showToast('¡Enviado! Gracias por participar 🎉');
     e.target.reset();
     answered.clear();
