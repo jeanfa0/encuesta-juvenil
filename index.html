@@ -209,6 +209,7 @@ h1 em { font-style: italic; color: #e8412c; }
   color: #c4bfb9;
   text-align: center;
   line-height: 1.15;
+  /* FIXED: ya no se oculta en móvil */
 }
 
 .lk input[value="1"]:checked ~ .lk-box { background:#eff6ff; border-color:#2563eb; transform:translateY(-3px); }
@@ -299,8 +300,23 @@ h1 em { font-style: italic; color: #e8412c; }
   color: #c4bfb9;
 }
 
+/* MÓVIL: ajuste de fuente para que quepan las etiquetas */
 @media (max-width: 480px) {
-  .lk-w { display: none; }
+  .lk-box {
+    padding: 9px 2px 7px;
+    gap: 3px;
+  }
+  .lk-n {
+    font-size: 1rem;
+  }
+  .lk-w {
+    font-size: 7px;
+    letter-spacing: 0;
+    /* visible en móvil - no se oculta */
+  }
+  .likert {
+    gap: 4px;
+  }
   h1 { letter-spacing: -0.5px; }
 }
 </style>
@@ -323,6 +339,7 @@ h1 em { font-style: italic; color: #e8412c; }
   </div>
 
   <form id="surveyForm">
+
     <div class="sec-header">
       <span class="sec-badge badge-social">📱 Adicción a redes</span>
       <div class="sec-rule"></div>
