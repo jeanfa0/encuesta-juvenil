@@ -344,6 +344,7 @@ h1 em { font-style: italic; color: #e8412c; }
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -443,7 +444,13 @@ document.getElementById('surveyForm').addEventListener('submit', async e => {
       const ipData = await ipRes.json();
       ip = ipData.ip;
     } catch(_) {}
-    await addDoc(collection(db, 'respuestas'), { ...res, ip, timestamp: serverTimestamp() });
+    let visitorId = 'desconocido';
+    try {
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
+      visitorId = result.visitorId;
+    } catch(_) {}
+    await addDoc(collection(db, 'respuestas'), { ...res, ip, visitorId, timestamp: serverTimestamp() });
     showToast('¡Enviado! Gracias por participar 🎉');
     e.target.reset();
     answered.clear();
