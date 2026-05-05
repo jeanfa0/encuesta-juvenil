@@ -4,67 +4,378 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Encuesta Redes 2025</title>
-    <!-- Bootstrap para un diseño limpio -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .main-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: none; }
-        .btn-excel { background-color: #1D6F42; color: white; border: none; }
-        .btn-excel:hover { background-color: #155231; color: white; }
+        :root {
+            --bg: #0d0f14;
+            --surface: #13161e;
+            --surface2: #1a1e28;
+            --border: #252933;
+            --accent: #4fffb0;
+            --accent2: #4f9fff;
+            --text: #e8eaf0;
+            --muted: #5a6070;
+            --danger: #ff4f6b;
+            --excel: #1D6F42;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(79,255,176,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79,255,176,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 48px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .header-left .eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .header-left h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .header-left .subtitle {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 6px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* Stats row */
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .stat-pill .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .stat-pill .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+        .stat-pill .value { font-size: 15px; font-weight: 500; color: var(--text); }
+
+        /* Export button */
+        .btn-export {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--excel);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 24px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .btn-export::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0);
+            transition: background 0.2s;
+        }
+
+        .btn-export:hover::before { background: rgba(255,255,255,0.08); }
+        .btn-export:active { transform: scale(0.98); }
+
+        .btn-export svg { flex-shrink: 0; }
+
+        /* Table card */
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-wrapper { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead tr {
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        th:first-child { padding-left: 24px; }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(37,41,51,0.5);
+            transition: background 0.15s;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: rgba(79,255,176,0.03); }
+
+        td {
+            padding: 13px 16px;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        td:first-child {
+            padding-left: 24px;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--accent2);
+        }
+
+        .val-cell {
+            font-family: 'DM Mono', monospace;
+        }
+
+        .val-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .val-1 { background: rgba(255,79,107,0.15); color: #ff4f6b; }
+        .val-2 { background: rgba(255,150,79,0.15); color: #ff964f; }
+        .val-3 { background: rgba(255,220,79,0.15); color: #ffdc4f; }
+        .val-4 { background: rgba(79,159,255,0.15); color: #4f9fff; }
+        .val-5 { background: rgba(79,255,176,0.15); color: #4fffb0; }
+        .val-dash { background: rgba(90,96,112,0.15); color: var(--muted); }
+
+        /* Loading */
+        .loading-row td {
+            text-align: center;
+            padding: 64px 24px;
+            color: var(--muted);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Row number */
+        .row-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            width: 32px;
+            text-align: center;
+            padding-left: 16px !important;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--surface2);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 13px;
+            font-family: 'DM Mono', monospace;
+            color: var(--accent);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            z-index: 100;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* Empty state */
+        .empty { text-align: center; padding: 64px 24px; color: var(--muted); }
+        .empty svg { opacity: 0.3; margin-bottom: 16px; }
+
+        @media (max-width: 600px) {
+            .header-left h1 { font-size: 24px; }
+            .container { padding: 24px 16px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container py-5">
-    <div class="row mb-4 align-items-center">
-        <div class="col">
-            <h1 class="h3 text-dark fw-bold">Panel de Resultados</h1>
-            <p class="text-muted">Gestión de datos: encuesta-redes-2025</p>
+<div class="container">
+    <header>
+        <div class="header-left">
+            <div class="eyebrow">▸ Sistema de resultados</div>
+            <h1>Panel de Encuesta</h1>
+            <div class="subtitle">encuesta-redes-2025 · Firestore DB</div>
         </div>
-        <div class="col-auto">
-            <button id="btnExportar" class="btn btn-excel px-4 py-2 shadow-sm">
-                Descargar Excel (.csv)
-            </button>
-        </div>
-    </div>
+        <button id="btnExportar" class="btn-export" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 18 15 15"/>
+            </svg>
+            Exportar Excel (.xlsx)
+        </button>
+    </header>
 
-    <div class="card main-card">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">IP del Usuario</th>
-                            <th>Q1</th>
-                            <th>Q2</th>
-                            <th>Q3</th>
-                            <th>Q4</th>
-                            <th>Q5</th>
-                            <th>Q6</th>
-                            <th>Q7</th>
-                            <th>Q8</th>
-                            <th>Q10</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cuerpoTabla">
-                        <tr>
-                            <td colspan="10" class="text-center py-5">
-                                <div class="spinner-border text-primary" role="status"></div>
-                                <p class="mt-2">Cargando base de datos...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <div class="stats-row">
+        <div class="stat-pill">
+            <div class="dot"></div>
+            <div>
+                <div class="label">Respuestas</div>
+                <div class="value" id="statTotal">—</div>
+            </div>
+        </div>
+        <div class="stat-pill">
+            <div class="dot" style="background:var(--accent2); box-shadow: 0 0 8px var(--accent2)"></div>
+            <div>
+                <div class="label">Preguntas</div>
+                <div class="value">9</div>
+            </div>
+        </div>
+        <div class="stat-pill">
+            <div class="dot" style="background:#ffdc4f; box-shadow: 0 0 8px #ffdc4f; animation-delay:0.5s"></div>
+            <div>
+                <div class="label">Base de datos</div>
+                <div class="value">Firestore</div>
             </div>
         </div>
     </div>
+
+    <div class="table-card">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="row-num">#</th>
+                        <th>IP del Usuario</th>
+                        <th>Q1</th>
+                        <th>Q2</th>
+                        <th>Q3</th>
+                        <th>Q4</th>
+                        <th>Q5</th>
+                        <th>Q6</th>
+                        <th>Q7</th>
+                        <th>Q8</th>
+                        <th>Q10</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+                    <tr class="loading-row">
+                        <td colspan="11">
+                            <div class="spinner"></div>
+                            Cargando base de datos...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<div class="toast" id="toast"></div>
+
+<!-- SheetJS for real Excel export -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // Tus credenciales configuradas
   const firebaseConfig = {
     apiKey: "AIzaSyBvyZZkAgIZeLqaLANuAUurtUJUPLzAObg",
     authDomain: "encuesta-redes-2025.firebaseapp.com",
@@ -79,63 +390,194 @@
   const tableBody = document.getElementById('cuerpoTabla');
   let excelData = [];
 
+  function getValClass(v) {
+    if (v === null || v === undefined || v === '') return 'val-dash';
+    const n = parseInt(v);
+    if (n >= 1 && n <= 5) return `val-${n}`;
+    return 'val-dash';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
   async function getData() {
     try {
       const querySnapshot = await getDocs(collection(db, "respuestas"));
       tableBody.innerHTML = '';
       excelData = [];
 
+      if (querySnapshot.empty) {
+        tableBody.innerHTML = `
+          <tr><td colspan="11">
+            <div class="empty">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p>No se encontraron respuestas en la colección.</p>
+            </div>
+          </td></tr>`;
+        return;
+      }
+
+      let idx = 1;
       querySnapshot.forEach((doc) => {
         const item = doc.data();
         excelData.push(item);
-        
+
+        const qs = ['q1','q2','q3','q4','q5','q6','q7','q8','q10'];
+        const cells = qs.map(q => {
+          const val = item[q] ?? '';
+          const cls = getValClass(val);
+          const display = val !== '' && val !== null && val !== undefined ? val : '—';
+          return `<td><span class="val-badge ${cls}">${display}</span></td>`;
+        }).join('');
+
         tableBody.innerHTML += `
           <tr>
-            <td class="ps-4 fw-medium text-primary">${item.ip || 'Anónimo'}</td>
-            <td>${item.q1 ?? '-'}</td>
-            <td>${item.q2 ?? '-'}</td>
-            <td>${item.q3 ?? '-'}</td>
-            <td>${item.q4 ?? '-'}</td>
-            <td>${item.q5 ?? '-'}</td>
-            <td>${item.q6 ?? '-'}</td>
-            <td>${item.q7 ?? '-'}</td>
-            <td>${item.q8 ?? '-'}</td>
-            <td>${item.q10 ?? '-'}</td>
-          </tr>
-        `;
+            <td class="row-num">${idx}</td>
+            <td>${item.ip || 'Anónimo'}</td>
+            ${cells}
+          </tr>`;
+        idx++;
       });
+
+      document.getElementById('statTotal').textContent = excelData.length;
+      document.getElementById('btnExportar').disabled = false;
+
     } catch (error) {
       console.error("Error al cargar:", error);
-      tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Error: Revisa las reglas de seguridad de Firestore.</td></tr>`;
+      tableBody.innerHTML = `
+        <tr><td colspan="11" style="text-align:center; padding:48px; color:var(--danger); font-family:'DM Mono',monospace; font-size:13px;">
+          ✕ Error de conexión — Revisa las reglas de Firestore
+        </td></tr>`;
     }
   }
 
   document.getElementById('btnExportar').onclick = () => {
-    if (excelData.length === 0) return alert("No hay datos cargados.");
+    if (excelData.length === 0) return;
 
-    const headers = ["IP", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q10"];
-    let csvRows = [headers.join(",")];
+    const XLSX = window.XLSX;
 
-    excelData.forEach(row => {
-      const values = [
-        row.ip || "N/A", row.q1 || 0, row.q2 || 0, row.q3 || 0,
-        row.q4 || 0, row.q5 || 0, row.q6 || 0, row.q7 || 0,
-        row.q8 || 0, row.q10 || 0
-      ];
-      csvRows.push(values.join(","));
+    // ——— Build worksheet data ———
+    const headers = ["#", "IP del Usuario", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q10"];
+    const rows = excelData.map((row, i) => [
+      i + 1,
+      row.ip || "N/A",
+      row.q1 ?? "", row.q2 ?? "", row.q3 ?? "",
+      row.q4 ?? "", row.q5 ?? "", row.q6 ?? "",
+      row.q7 ?? "", row.q8 ?? "", row.q10 ?? ""
+    ]);
+
+    const wsData = [headers, ...rows];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // ——— Column widths ———
+    ws['!cols'] = [
+      { wch: 5 },   // #
+      { wch: 18 },  // IP
+      { wch: 7 }, { wch: 7 }, { wch: 7 },
+      { wch: 7 }, { wch: 7 }, { wch: 7 },
+      { wch: 7 }, { wch: 7 }, { wch: 7 },
+    ];
+
+    // ——— Freeze top row ———
+    ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+
+    // ——— Styles via SheetJS (header row) ———
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    const totalCols = range.e.c;
+
+    for (let C = 0; C <= totalCols; C++) {
+      const cellAddr = XLSX.utils.encode_cell({ r: 0, c: C });
+      if (!ws[cellAddr]) continue;
+      ws[cellAddr].s = {
+        fill: { fgColor: { rgb: "1D6F42" } },
+        font: { bold: true, color: { rgb: "FFFFFF" }, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: {
+          bottom: { style: "thin", color: { rgb: "155231" } }
+        }
+      };
+    }
+
+    // ——— Data rows: alternate row colors + centered values ———
+    for (let R = 1; R <= range.e.r; R++) {
+      const isEven = R % 2 === 0;
+      const rowFill = isEven ? "F2F8F5" : "FFFFFF";
+
+      for (let C = 0; C <= totalCols; C++) {
+        const cellAddr = XLSX.utils.encode_cell({ r: R, c: C });
+        if (!ws[cellAddr]) {
+          ws[cellAddr] = { t: 's', v: '' };
+        }
+        ws[cellAddr].s = {
+          fill: { fgColor: { rgb: rowFill } },
+          alignment: { horizontal: C === 1 ? "left" : "center", vertical: "center" },
+          font: { sz: 10, color: { rgb: "2D2D2D" } },
+          border: {
+            bottom: { style: "hair", color: { rgb: "DDDDDD" } },
+            right: { style: "hair", color: { rgb: "DDDDDD" } },
+          }
+        };
+      }
+    }
+
+    // ——— Auto filter ———
+    ws['!autofilter'] = { ref: ws['!ref'] };
+
+    // ——— Build workbook ———
+    const wb = XLSX.utils.book_new();
+    wb.Props = {
+      Title: "Resultados Encuesta Redes 2025",
+      Subject: "Encuesta",
+      Author: "Panel encuesta-redes-2025",
+      CreatedDate: new Date()
+    };
+
+    XLSX.utils.book_append_sheet(wb, ws, "Resultados");
+
+    // ——— Summary sheet ———
+    const questionLabels = ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8","Q10"];
+    const qKeys = ["q1","q2","q3","q4","q5","q6","q7","q8","q10"];
+    const summaryData = [
+      ["Pregunta", "Promedio", "Mín", "Máx", "Respuestas Válidas"],
+    ];
+
+    qKeys.forEach((key, i) => {
+      const vals = excelData
+        .map(r => parseFloat(r[key]))
+        .filter(v => !isNaN(v));
+      if (vals.length === 0) {
+        summaryData.push([questionLabels[i], "—", "—", "—", 0]);
+      } else {
+        const avg = (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2);
+        summaryData.push([questionLabels[i], parseFloat(avg), Math.min(...vals), Math.max(...vals), vals.length]);
+      }
     });
 
-    const csvString = csvRows.join("\n");
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    
-    link.setAttribute("href", url);
-    link.setAttribute("download", "Resultados_Encuesta_2025.csv");
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+    wsSummary['!cols'] = [{ wch: 12 }, { wch: 12 }, { wch: 8 }, { wch: 8 }, { wch: 20 }];
+
+    // Style summary header
+    for (let C = 0; C <= 4; C++) {
+      const ca = XLSX.utils.encode_cell({ r: 0, c: C });
+      if (wsSummary[ca]) {
+        wsSummary[ca].s = {
+          fill: { fgColor: { rgb: "1A4A6E" } },
+          font: { bold: true, color: { rgb: "FFFFFF" }, sz: 11 },
+          alignment: { horizontal: "center", vertical: "center" }
+        };
+      }
+    }
+
+    XLSX.utils.book_append_sheet(wb, wsSummary, "Resumen");
+
+    // ——— Download ———
+    const fecha = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `Resultados_Encuesta_${fecha}.xlsx`);
+    showToast(`✓ ${excelData.length} filas exportadas correctamente`);
   };
 
   getData();
