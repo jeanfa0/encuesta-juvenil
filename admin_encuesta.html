@@ -351,12 +351,13 @@
                         <th>Q6</th>
                         <th>Q7</th>
                         <th>Q8</th>
+                        <th>Q9</th>
                         <th>Q10</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpoTabla">
                     <tr class="loading-row">
-                        <td colspan="11">
+                        <td colspan="12">
                             <div class="spinner"></div>
                             Cargando base de datos...
                         </td>
@@ -412,7 +413,7 @@
 
       if (querySnapshot.empty) {
         tableBody.innerHTML = `
-          <tr><td colspan="11">
+          <tr><td colspan="12">
             <div class="empty">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               <p>No se encontraron respuestas en la colección.</p>
@@ -426,7 +427,7 @@
         const item = doc.data();
         excelData.push(item);
 
-        const qs = ['q1','q2','q3','q4','q5','q6','q7','q8','q10'];
+        const qs = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10'];
         const cells = qs.map(q => {
           const val = item[q] ?? '';
           const cls = getValClass(val);
@@ -449,7 +450,7 @@
     } catch (error) {
       console.error("Error al cargar:", error);
       tableBody.innerHTML = `
-        <tr><td colspan="11" style="text-align:center; padding:48px; color:var(--danger); font-family:'DM Mono',monospace; font-size:13px;">
+        <tr><td colspan="12" style="text-align:center; padding:48px; color:var(--danger); font-family:'DM Mono',monospace; font-size:13px;">
           ✕ Error de conexión — Revisa las reglas de Firestore
         </td></tr>`;
     }
@@ -461,13 +462,13 @@
     const XLSX = window.XLSX;
 
     // ——— Build worksheet data ———
-    const headers = ["#", "IP del Usuario", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q10"];
+    const headers = ["#", "IP del Usuario", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10"];
     const rows = excelData.map((row, i) => [
       i + 1,
       row.ip || "N/A",
       row.q1 ?? "", row.q2 ?? "", row.q3 ?? "",
       row.q4 ?? "", row.q5 ?? "", row.q6 ?? "",
-      row.q7 ?? "", row.q8 ?? "", row.q10 ?? ""
+      row.q7 ?? "", row.q8 ?? "", row.q9 ?? "", row.q10 ?? ""
     ]);
 
     const wsData = [headers, ...rows];
@@ -479,7 +480,7 @@
       { wch: 18 },  // IP
       { wch: 7 }, { wch: 7 }, { wch: 7 },
       { wch: 7 }, { wch: 7 }, { wch: 7 },
-      { wch: 7 }, { wch: 7 }, { wch: 7 },
+      { wch: 7 }, { wch: 7 }, { wch: 7 }, { wch: 7 },
     ];
 
     // ——— Freeze top row ———
@@ -539,8 +540,8 @@
     XLSX.utils.book_append_sheet(wb, ws, "Resultados");
 
     // ——— Summary sheet ———
-    const questionLabels = ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8","Q10"];
-    const qKeys = ["q1","q2","q3","q4","q5","q6","q7","q8","q10"];
+    const questionLabels = ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8","Q9","Q10"];
+    const qKeys = ["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10"];
     const summaryData = [
       ["Pregunta", "Promedio", "Mín", "Máx", "Respuestas Válidas"],
     ];
