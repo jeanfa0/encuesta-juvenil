@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Encuesta Redes 2025</title>
+    <!-- Bootstrap para un diseño limpio -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: none; }
+        .btn-excel { background-color: #1D6F42; color: white; border: none; }
+        .btn-excel:hover { background-color: #155231; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="h3 text-dark fw-bold">Panel de Resultados</h1>
+            <p class="text-muted">Gestión de datos: encuesta-redes-2025</p>
+        </div>
+        <div class="col-auto">
+            <button id="btnExportar" class="btn btn-excel px-4 py-2 shadow-sm">
+                Descargar Excel (.csv)
+            </button>
+        </div>
+    </div>
+
+    <div class="card main-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">IP del Usuario</th>
+                            <th>Q1</th>
+                            <th>Q2</th>
+                            <th>Q3</th>
+                            <th>Q4</th>
+                            <th>Q5</th>
+                            <th>Q6</th>
+                            <th>Q7</th>
+                            <th>Q8</th>
+                            <th>Q10</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla">
+                        <tr>
+                            <td colspan="10" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2">Cargando base de datos...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // Tus credenciales configuradas
+  const firebaseConfig = {
+    apiKey: "AIzaSyBvyZZkAgIZeLqaLANuAUurtUJUPLzAObg",
+    authDomain: "encuesta-redes-2025.firebaseapp.com",
+    projectId: "encuesta-redes-2025",
+    storageBucket: "encuesta-redes-2025.firebasestorage.app",
+    messagingSenderId: "625527824388",
+    appId: "1:625527824388:web:f186b0fed304ea41c85551"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const tableBody = document.getElementById('cuerpoTabla');
+  let excelData = [];
+
+  async function getData() {
+    try {
+      const querySnapshot = await getDocs(collection(db, "respuestas"));
+      tableBody.innerHTML = '';
+      excelData = [];
+
+      querySnapshot.forEach((doc) => {
+        const item = doc.data();
+        excelData.push(item);
+        
+        tableBody.innerHTML += `
+          <tr>
+            <td class="ps-4 fw-medium text-primary">${item.ip || 'Anónimo'}</td>
+            <td>${item.q1 ?? '-'}</td>
+            <td>${item.q2 ?? '-'}</td>
+            <td>${item.q3 ?? '-'}</td>
+            <td>${item.q4 ?? '-'}</td>
+            <td>${item.q5 ?? '-'}</td>
+            <td>${item.q6 ?? '-'}</td>
+            <td>${item.q7 ?? '-'}</td>
+            <td>${item.q8 ?? '-'}</td>
+            <td>${item.q10 ?? '-'}</td>
+          </tr>
+        `;
+      });
+    } catch (error) {
+      console.error("Error al cargar:", error);
+      tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Error: Revisa las reglas de seguridad de Firestore.</td></tr>`;
+    }
+  }
+
+  document.getElementById('btnExportar').onclick = () => {
+    if (excelData.length === 0) return alert("No hay datos cargados.");
+
+    const headers = ["IP", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q10"];
+    let csvRows = [headers.join(",")];
+
+    excelData.forEach(row => {
+      const values = [
+        row.ip || "N/A", row.q1 || 0, row.q2 || 0, row.q3 || 0,
+        row.q4 || 0, row.q5 || 0, row.q6 || 0, row.q7 || 0,
+        row.q8 || 0, row.q10 || 0
+      ];
+      csvRows.push(values.join(","));
+    });
+
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", "Resultados_Encuesta_2025.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  getData();
+</script>
+
+</body>
+</html>
